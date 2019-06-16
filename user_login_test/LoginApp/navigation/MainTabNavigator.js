@@ -3,16 +3,18 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+import LoginScreen from '../screens/LoginScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
-const HomeStack = createStackNavigator({
-  Home: HomeScreen,
+// Create a stack navigator with the "RegisterScreen.js file and call it RegisterStack"
+const RegisterStack = createStackNavigator({
+  Register: RegisterScreen,
 });
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
+// Create the visual tab that calls RegisterStack through a tab bar icon (tab button)
+RegisterStack.navigationOptions = {
+  tabBarLabel: 'Register',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -25,12 +27,12 @@ HomeStack.navigationOptions = {
   ),
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+const LoginStack = createStackNavigator({
+  Login: LoginScreen,
 });
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
+LoginStack.navigationOptions = {
+  tabBarLabel: 'Login',
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -54,7 +56,7 @@ SettingsStack.navigationOptions = {
 };
 
 export default createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
+  RegisterStack,
+  LoginStack,
   SettingsStack,
 });
