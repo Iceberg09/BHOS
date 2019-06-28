@@ -30,51 +30,79 @@ backend.post('/user', (req, res) => {
 	const userPassword = req.body.user_password
 	console.log(userName);
 
-	// the INSERT SQL command -- the question marks allow us to add another string/variable in their place when sending the command to the SQL database
-	const insertString = "INSERT INTO ?? (full_name, user_email, user_password) VALUES (?,?,?);"
+	if(userName == '' || userEmail == '' || userPassword == ''){
+		console.log('responding with an error because the user had a blank field')
+		res.json('You have missing fields!')
+	}
+	
+	else {
+		// the INSERT SQL command -- the question marks allow us to add another string/variable in their place when sending the command to the SQL database
+		const insertString = "INSERT INTO ?? (full_name, user_email, user_password) VALUES (?,?,?);"
 
-	// run the query (insertString) on the variable 'connection', which is a mysql connection (as introduced by the mysql node plugin)
-	// replace the question mark in the query with the different details sent by the frontend by placing it after it in between [] within
-	//  the query function (a function introduced by the mysql node plugin) the last parameter in the 'query' function is an arrow function
-	// with three parameters, errors, rows (indecies), and fields (cells) -- we're only using 'err' for now.
-	connection.query(insertString, [myUsers, userName, userEmail, userPassword], (err, rows, fields) => {
-		// catch errors
-		if (err) {
-			console.log("Failed to insert the user: " + err)
-			res.sendStatus(500)
-			throw err
-			// OR // return
-		}
-		console.log("I think we inserted the user successfully")
-	})
+		// another query, but this time for confirming that the inserted user credentials actually got inserted into the database (by querying it)
+		const queryString1 = "SELECT * FROM ?? WHERE id=LAST_INSERT_ID();"
 
-	// another query, but this time for confirming that the inserted user credentials actually got inserted into the database (by querying it)
-	const queryString = "SELECT * FROM ?? WHERE id=LAST_INSERT_ID();"
-		
-	connection.query(queryString, [myUsers], (err, rows) => {
-		if (err) {
-			console.log("Failed to query for last inserted user: " + err)
-			res.sendStatus(500)
-			throw err
-			// OR // return
-		}
-		console.log("I think we fetched the last iserted user successfully")
+		const queryString2 = "SELECT * FROM ?? WHERE user_email = ?;"
 
-		// just changing the way the outputted JSON looks -- only outputting the id, full name, and email (and not the password).
-		const users = rows.map((row) => {
-			return {userId: row.id, fullName: row.full_name, userEmail: row.user_email}
+		connection.query(queryString2, [myUsers,userEmail, userPassword], (err, rows) => {
+			if (err) {
+				console.log("Failed to query for users: " + err)
+				res.sendStatus(500)
+				throw err
+			}
+
+			if(Object.keys(rows).length != 0){ // this is where the login logic would go
+				res.json("There already exists a user with that email!")
+				const users = rows.map((row) => {
+					console.log("App user tried to register with an email that's already associated with " + row.full_name + "'s account");
+				})
+			} 
+			
+			else{
+
+				// run the query (insertString) on the variable 'connection', which is a mysql connection (as introduced by the mysql node plugin)
+				// replace the question mark in the query with the different details sent by the frontend by placing it after it in between [] within
+				//  the query function (a function introduced by the mysql node plugin) the last parameter in the 'query' function is an arrow function
+				// with three parameters, errors, rows (indecies), and fields (cells) -- we're only using 'err' for now.
+				connection.query(insertString, [myUsers, userName, userEmail, userPassword], (err, rows, fields) => {
+					// catch errors
+					if (err) {
+						console.log("Failed to insert the user: " + err)
+						res.sendStatus(500)
+						throw err
+						// OR // return
+					}
+					console.log("I think we inserted the user successfully")
+				})
+					
+				connection.query(queryString1, [myUsers], (err, rows) => {
+					if (err) {
+						console.log("Failed to query for last inserted user: " + err)
+						res.sendStatus(500)
+						throw err
+						// OR // return
+					}
+					console.log("I think we fetched the last iserted user successfully")
+
+					// just changing the way the outputted JSON looks -- only outputting the id, full name, and email (and not the password).
+					const users = rows.map((row) => {
+						return {userId: row.id, fullName: row.full_name, userEmail: row.user_email}
+					})
+
+					// send the outputted JSON in the REST API response as a JSON object
+					res.json(users)
+				})	
+
+				// res.end()
+			}
 		})
-
-		// send the outputted JSON in the REST API response as a JSON object
-		res.json(users)
-	})	
-
-	// res.end()
+	}
 })
 
 // If the backend receives as a GET API request
-backend.get('/user/:id', (req, res) => {
-	console.log("Fetching user with id: " + req.params.id)
+// backend.get('/user/:id', (req, res) => {
+backend.get('/user/:UserEmail&:UserPassword', (req, res) => {
+	console.log("Fetching user with email: " + req.params.UserPassword)
 	
 	// connect to the project's local database (BHOS_login_data) under user "root", which has a password "password"
 	const connection = mysql.createConnection({
@@ -86,23 +114,32 @@ backend.get('/user/:id', (req, res) => {
 
 	// Set the id inputted in the client's request to a variable called 'userId' for cleanliness
 	const myUsers = 'users'
-	const userId = req.params.id
+	const userEmail = req.params.UserEmail
+	const userPassword = req.params.UserPassword
 
-	const queryString = "SELECT * FROM ?? WHERE id = ?"
+	const queryString = "SELECT * FROM ?? WHERE user_email = ? AND user_password = ?"
 
-	connection.query(queryString, [myUsers,userId], (err, rows) => {
+	connection.query(queryString, [myUsers,userEmail, userPassword], (err, rows) => {
 		if (err) {
 			console.log("Failed to query for users: " + err)
 			res.sendStatus(500)
 			throw err
 		}
-		console.log("I think we fetched users successfully")
+		console.log("I think we fetched users successfully, or at least no error was thrown by database")
 
-		const users = rows.map((row) => {
-			return {fullName: row.full_name, userEmail: row.user_email}
-		})
+		if(Object.keys(rows).length != 0){ // this is where the login logic would go
 
-		res.json(users)
+			const users = rows.map((row) => {
+				return {returnedFullName: row.full_name, returnedUserEmail: row.user_email}
+			})
+			
+			res.json(users)
+			console.log("User found!");
+		} else{
+			res.json(false)
+			console.log("No such user in database!");
+		}
+
 	})	
 })
 

@@ -10,6 +10,7 @@ import {
   Button,
   Alert,
   View,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import Logo from '../components/Logo';
@@ -25,15 +26,24 @@ export default class RegisterScreen extends React.Component {
     super()
 
     this.state = {
-      FullName: 'meh name',
-      UserEmail: 'meh email',
-      UserPassword: 'meh password'
+      FullName: '',
+      UserEmail: '',
+      UserPassword: ''
     }
     // console.log(this.state.FullName);
   }
 
+  // buttonClickListener = () => {
+  //   const { FullName } = this.state;
+  //   Alert.alert(FullName);
+  // }
+
   // After inserting the data successfully it will print the response message coming form PHP file in Alert.
   UserRegistrationFunction = () =>{
+
+    const { FullName, UserEmail, UserPassword } = this.state;
+
+    // Alert.alert(FullName);
 
     // use the fetch() API to insert data into MySQL database
     // URL with the local IP address with the location of PHP file through XAMPP
@@ -44,9 +54,9 @@ export default class RegisterScreen extends React.Component {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        full_name: 'hi mom!',
-        user_email: 'this.state.UserEmail',
-        user_password: 'this.state.UserPassword'
+        full_name: FullName,
+        user_email: UserEmail,
+        user_password: UserPassword
     
       })
     
@@ -65,45 +75,61 @@ export default class RegisterScreen extends React.Component {
   render() {
     const {navigate} = this.props.navigation;
     return (
-      <View style={styles.container}>
-
-          <View style={styles.MainContainer}>
-
-            <Logo/>
-
-            <Text style= {styles.title}>User Registration Form</Text>
       
-            <TextInput
-              placeholder="Enter Full Name"
-              onChangeText={name => this.setState({FullName : name})}
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-              />
-     
-            <TextInput
-              placeholder="Enter User Email"
-              onChangeText={email => this.setState({UserEmail : email})}
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-              />
-     
-            <TextInput
-              placeholder="Enter User Password"
-              onChangeText={password => this.setState({UserPassword : password})}
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-              secureTextEntry={true}
-              />
-     
-            <Button title="Click Here To Register" onPress={this.UserRegistrationFunction} color="#2196F3" />
+      <View style={styles.container}>
+        
+        <KeyboardAvoidingView style={styles.MainContainer} behavior="padding" keyboardVerticalOffset={85}>
 
-            <View style={styles.signupTextCont}>
-              <Text style={styles.signupText}>Already have an account?</Text>
-              <TouchableOpacity onPress={() => navigate('LoginStack')}><Text style={styles.signupButton}> Login</Text></TouchableOpacity>
-            </View>
+          <Logo/>
+
+          <Text style= {styles.title}>User Registration Form</Text>
+      
+          <TextInput
+            placeholder="Enter Full Name"
+            onChangeText={name => this.setState({FullName : name})}
+            underlineColorAndroid='transparent'
+            style={styles.TextInputStyleClass}
+            returnKeyType='next'
+            onSubmitEditing={() => this.emailInput.focus()}
+            autoCorrect={false}
+            keyboardType="default"
+          />
+     
+          <TextInput
+            placeholder="Enter User Email"
+            onChangeText={email => this.setState({UserEmail : email})}
+            underlineColorAndroid='transparent'
+            style={styles.TextInputStyleClass}
+            returnKeyType='next'
+            onSubmitEditing={() => this.passwordInput.focus()}
+            ref={(input) => this.emailInput = input}
+            autoCapitalize='none'
+            autoCorrect={false}
+            keyboardType="email-address"
+          />
+     
+          <TextInput
+            placeholder="Enter User Password"
+            onChangeText={password => this.setState({UserPassword : password})}
+            underlineColorAndroid='transparent'
+            style={styles.TextInputStyleClass}
+            secureTextEntry={true}
+            returnKeyType='go'
+            ref={(input) => this.passwordInput = input}
+            autoCapitalize='none'
+            autoCorrect={false}
+          />
           
-          </View>
+          <Button title="Click Here To Register" onPress={this.UserRegistrationFunction} color="#2196F3" />
 
+          {/* <Button title="Click Here To Register" onPress={this.UserRegistrationFunction} color="#2196F3" /> */}
+
+          <View style={styles.signupTextCont}>
+            <Text style={styles.signupText}>Already have an account?</Text>
+            <TouchableOpacity onPress={() => navigate('LoginStack')}><Text style={styles.signupButton}> Login</Text></TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+          
       </View>
     );
   }

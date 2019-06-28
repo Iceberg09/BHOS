@@ -10,6 +10,7 @@ import {
   Button,
   Alert,
   View,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import Logo from '../components/Logo';
@@ -28,19 +29,23 @@ export default class LoginScreen extends React.Component {
     
     super()
 
+    // we're declaring the states in the UserLoginFunction function below, so no need to declare them before that
     this.state = {
       FullName: '',
       UserEmail: '',
       UserPassword: ''
     }
   }
+  
 
   // After inserting the data successfully it will print the response message coming form PHP file in Alert.
   UserLoginFunction = () =>{
 
+    const { UserEmail, UserPassword } = this.state;
+
     // use the fetch() API to insert data into MySQL database
     // URL with the local IP address with the location of PHP file through XAMPP
-    fetch('http://localhost:3003/user/47', {
+    fetch('http://localhost:3003/user/'+UserEmail+'&'+UserPassword, {
       // method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -56,15 +61,27 @@ export default class LoginScreen extends React.Component {
     
       // })
     
-    }).then((response) => response.text())
-          .then((responseJson) => {
-    
-    // Showing response message coming from server after inserting records.
-            Alert.alert(responseJson);
-    
-          }).catch((error) => {
-            console.error(error);
-          });
+    }).then((response) => {
+      return response.json();
+
+    }).then((responseJson) => {
+      console.log(responseJson);
+
+// Showing response message coming from server after inserting records.
+      if (responseJson == false) {
+        Alert.alert("Wrong credentials!");
+        
+        // if (responseJson == true)
+      } else{
+        this.setState({ FullName : responseJson[0].returnedFullName})
+        // console.log(this.state);
+        Alert.alert("Full Name: " + this.state.FullName, "Email: " + this.state.UserEmail);
+        this.props.navigation.navigate('SettingsStack')
+      }
+
+    }).catch((error) => {
+      console.error(error);
+    });
   }
 
   // Create 3 TextInput component and 1 Button component inside the render’s return block, Each TextInput will get a value from user and stores in State. We would call the UserLoginFunction() on button onPress event.
@@ -73,7 +90,7 @@ export default class LoginScreen extends React.Component {
     return (
       <View style={styles.container}>
 
-          <View style={styles.MainContainer}>
+        <KeyboardAvoidingView style={styles.MainContainer} behavior="padding" keyboardVerticalOffset={70}>
 
             <Logo/>
 
@@ -84,6 +101,11 @@ export default class LoginScreen extends React.Component {
               onChangeText={email => this.setState({UserEmail : email})}
               underlineColorAndroid='transparent'
               style={styles.TextInputStyleClass}
+              returnKeyType='next'
+              onSubmitEditing={() => this.passwordInput.focus()}
+              autoCapitalize='none'
+              autoCorrect={false}
+              keyboardType="email-address"
               />
      
             <TextInput
@@ -92,6 +114,8 @@ export default class LoginScreen extends React.Component {
               underlineColorAndroid='transparent'
               style={styles.TextInputStyleClass}
               secureTextEntry={true}
+              returnKeyType='go'
+              ref={(input) => this.passwordInput = input}
               />
      
             <Button title="Click Here To Login" onPress={this.UserLoginFunction} color="#2196F3" />
@@ -101,7 +125,7 @@ export default class LoginScreen extends React.Component {
               <TouchableOpacity onPress={() => navigate('RegisterStack')}><Text style={styles.signupButton}> Signup</Text></TouchableOpacity>
             </View>
                      
-          </View>
+          </KeyboardAvoidingView>
 
       </View>
     );
