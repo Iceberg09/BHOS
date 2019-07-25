@@ -15,31 +15,31 @@ import {
 import { WebBrowser } from 'expo';
 import Logo from '../components/Logo';
 
-export default class LoginScreen extends React.Component {
+export default class ForgotPasswordScreen extends React.Component {
   static navigationOptions = {
-    title: 'Login',
+    title: 'ForgotPassword',
   };
-
-  signup() {
-		Actions.signup()
-	};
 
 // Create constructor() in your project and make 3 state named as FullName, UserEmail and UserPassword inside it.
   constructor() {
     
     super()
 
-    // we're declaring the states in the UserLoginFunction function below, so no need to declare them before that
     this.state = {
-      FullName: '~',
-      UserEmail: '~',
+      FullName: '',
+      UserEmail: '',
       UserPassword: '~'
     }
+    // console.log(this.state.FullName);
   }
-  
+
+  // buttonClickListener = () => {
+  //   const { FullName } = this.state;
+  //   Alert.alert(FullName);
+  // }
 
   // After inserting the data successfully it will print the response message coming form PHP file in Alert.
-  UserLoginFunction = () =>{
+  UserRegistrationFunction = () =>{
 
     var { UserEmail, UserPassword } = this.state;
 
@@ -53,7 +53,7 @@ export default class LoginScreen extends React.Component {
 
     // use the fetch() API to insert data into MySQL database
     // URL with the local IP address with the location of PHP file through XAMPP
-    fetch('http://localhost:3003/user/'+UserEmail+'&'+UserPassword, {
+    fetch('http://localhost:3003/user/'+UserEmail, {
       // method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -76,67 +76,75 @@ export default class LoginScreen extends React.Component {
       console.log(responseJson);
 
 // Showing response message coming from server after inserting records.
-      if (responseJson == false) {
-        Alert.alert("Wrong credentials!");
+      if (responseJson == '~') {
+        Alert.alert("Please enter the email address of the account you'd like to recover!");
         
         // if (responseJson == true)
-      } else{
-        this.setState({ FullName : responseJson[0].returnedFullName})
+      }else if(responseJson == false){
+        Alert.alert("There is no user with the inputted email address!");
+      
+      }else{
+        this.setState({ FullName : responseJson[0].returnedFullName, UserPassword : responseJson[0].returnedUserPassword})
         // console.log(this.state);
-        Alert.alert("Full Name: " + this.state.FullName, "Email: " + this.state.UserEmail);
-        this.props.navigation.navigate('SettingsStack')
+        Alert.alert(
+            "User Found!",
+            "Are you " + this.state.FullName + "?",
+            [
+              {text: 'No, I\'m not!', onPress: () => console.log('No Pressed')},
+              {
+                text: 'Yes, I am ' + this.state.FullName + '!',
+                onPress: () => {
+                    console.log('Confirm Pressed')
+                    Alert.alert("Your password is " + this.state.UserPassword)
+                    this.props.navigation.navigate('LoginStack')
+                }
+              },
+              {text: 'Cancel', onPress: () => console.log('Cancel Pressed'),  style: 'cancel'},
+            ]
+        );
+        // this.props.navigation.navigate('SettingsStack')
       }
 
     }).catch((error) => {
       console.error(error);
     });
+
   }
 
-  // Create 3 TextInput component and 1 Button component inside the render’s return block, Each TextInput will get a value from user and stores in State. We would call the UserLoginFunction() on button onPress event.
+  // Create 3 TextInput component and 1 Button component inside the render’s return block, Each TextInput will get a value from user and stores in State. We would call the UserRegistrationFunction() on button onPress event.
   render() {
     const {navigate} = this.props.navigation;
     return (
+      
       <View style={styles.container}>
+        
+        <KeyboardAvoidingView style={styles.MainContainer} behavior="padding" keyboardVerticalOffset={85}>
 
-        <KeyboardAvoidingView style={styles.MainContainer} behavior="padding" keyboardVerticalOffset={70}>
+          <Logo/>
 
-            <Logo/>
-
-            <Text style= {styles.title}>User Login Form</Text>
+          <Text style= {styles.title}>Password Recovery Form</Text>
      
-            <TextInput
-              placeholder="Enter User Email"
-              onChangeText={email => this.setState({UserEmail : email})}
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-              returnKeyType='next'
-              onSubmitEditing={() => this.passwordInput.focus()}
-              autoCapitalize='none'
-              autoCorrect={false}
-              keyboardType="email-address"
-              />
-     
-            <TextInput
-              placeholder="Enter User Password"
-              onChangeText={password => this.setState({UserPassword : password})}
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-              secureTextEntry={true}
-              returnKeyType='go'
-              ref={(input) => this.passwordInput = input}
-              />
-     
-            <Button title="Click Here To Login" onPress={this.UserLoginFunction} color="#2196F3" />
-            <TouchableOpacity onPress={() => navigate('ForgotPasswordStack')} style={styles.touchableText}><Text style={styles.alternativeButton}>Forgot Password</Text></TouchableOpacity>
+          <TextInput
+            placeholder="Enter Your Email Address"
+            onChangeText={email => this.setState({UserEmail : email})}
+            underlineColorAndroid='transparent'
+            style={styles.TextInputStyleClass}
+            returnKeyType='next'
+            onSubmitEditing={() => this.passwordInput.focus()}
+            ref={(input) => this.emailInput = input}
+            autoCapitalize='none'
+            autoCorrect={false}
+            keyboardType="email-address"
+          />
+          
+          <Button title="Recover" onPress={this.UserRegistrationFunction} color="#2196F3" />
 
-
-            <View style={styles.signupTextCont}>
-              <Text style={styles.signupText}>Don't have an account yet?</Text>
-              <TouchableOpacity onPress={() => navigate('RegisterStack')}><Text style={styles.alternativeButton}> Signup</Text></TouchableOpacity>
-            </View>
-                     
-          </KeyboardAvoidingView>
-
+          <View style={styles.signupTextCont}>
+            <Text style={styles.signupText}>Already have an account?</Text>
+            <TouchableOpacity onPress={() => navigate('LoginStack')}><Text style={styles.signupButton}> Login</Text></TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+          
       </View>
     );
   }
@@ -222,15 +230,9 @@ const styles = StyleSheet.create({
   },
   signupText: {
   	color:'#009688',
-    fontSize:16,
-    justifyContent :'center',
+  	fontSize:16
   },
-  touchableText: {
-    justifyContent :'center',
-    flexDirection:'row',
-    marginTop: 10
-  },
-  alternativeButton: {
+  signupButton: {
   	color:'#009688',
   	fontSize:16,
   	fontWeight:'500'
