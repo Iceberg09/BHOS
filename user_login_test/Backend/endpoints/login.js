@@ -1,7 +1,7 @@
 const loginrouter = require('express').Router();
 
-loginrouter.get('/user/:UserEmail&:UserPassword', (req, res) => {
-	console.log("Fetching user with email: " + req.params.UserEmail)
+loginrouter.get('/user/:UserName&:UserPassword', (req, res) => {
+	console.log("Fetching user with username: " + req.params.UserName)
     
     const pool = require('../backend');
 
@@ -9,18 +9,18 @@ loginrouter.get('/user/:UserEmail&:UserPassword', (req, res) => {
 	const connection = pool
 
 	// Set the id inputted in the client's request to a variable called 'userId' for cleanliness
-	const myUsers = 'users'
-	const userEmail = req.params.UserEmail
+	const myUsers = 'usersNew'
+	const userUsername = req.params.UserName
 	const userPassword = req.params.UserPassword
 
-	if(userEmail == '~' || userPassword == '~'){
+	if(userUsername == '~' || userPassword == '~'){
 		console.log("One or both credentials fields are empty")
 		res.json(false)
 	} else{
 
-		const queryString = "SELECT * FROM ?? WHERE user_email = ? AND user_password = ?"
+		const queryString = "SELECT * FROM ?? WHERE user_username = ? AND user_password = ?"
 
-		connection.query(queryString, [myUsers,userEmail, userPassword], (err, rows) => {
+		connection.query(queryString, [myUsers,userUsername, userPassword], (err, rows) => {
 			if (err) {
 				console.log("Failed to query for users: " + err)
 				res.sendStatus(500)
@@ -31,7 +31,7 @@ loginrouter.get('/user/:UserEmail&:UserPassword', (req, res) => {
 			if(Object.keys(rows).length != 0){ // this is where the login logic would go
 
 				const users = rows.map((row) => {
-					return {returnedFullName: row.full_name, returnedUserEmail: row.user_email}
+					return {returnedFullName: row.user_fullname, returnedLicense: row.user_license, returnedUsername: row.user_username}
 				})
 				
 				res.json(users)

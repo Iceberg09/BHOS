@@ -6,8 +6,6 @@ const bodyParser = require('body-parser');
 
 const backend = express();
 
-// const catcher = require('./endpoints/catcher');
-
 // Using the express body-parser to be able to read values as sent from the frontend's fretch (POST API) function
 backend.use(bodyParser.json());
 

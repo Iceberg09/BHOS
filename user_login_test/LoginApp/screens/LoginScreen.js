@@ -1,8 +1,5 @@
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -24,16 +21,17 @@ export default class LoginScreen extends React.Component {
 		Actions.signup()
 	};
 
-// Create constructor() in your project and make 3 state named as FullName, UserEmail and UserPassword inside it.
+// Create constructor() in your project and make 3 state named as FullName, UserName and UserPassword inside it.
   constructor() {
     
     super()
 
     // we're declaring the states in the UserLoginFunction function below, so no need to declare them before that
     this.state = {
+      UserName: '~',
       FullName: '~',
-      UserEmail: '~',
-      UserPassword: '~'
+      LicenseNumber: '~',
+      UserPassword: '~',
     }
   }
   
@@ -41,10 +39,10 @@ export default class LoginScreen extends React.Component {
   // After inserting the data successfully it will print the response message coming form PHP file in Alert.
   UserLoginFunction = () =>{
 
-    var { UserEmail, UserPassword } = this.state;
+    var { UserName, UserPassword } = this.state;
 
-    if(UserEmail == ''){
-      UserEmail = '~'
+    if(UserName == ''){
+      UserName = '~'
     }
 
     if(UserPassword == ''){
@@ -53,7 +51,7 @@ export default class LoginScreen extends React.Component {
 
     // use the fetch() API to insert data into MySQL database
     // URL with the local IP address with the location of PHP file through XAMPP
-    fetch('http://localhost:3003/user/'+UserEmail+'&'+UserPassword, {
+    fetch('http://localhost:3003/user/'+UserName+'&'+UserPassword, {
       // method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -63,9 +61,11 @@ export default class LoginScreen extends React.Component {
     
       //   name: this.state.FullName,
     
-      //   email: this.state.UserEmail,
+      //   email: this.state.UserName,
     
       //   password: this.state.UserPassword
+
+      //   license: this.state.Userlicense
     
       // })
     
@@ -82,8 +82,9 @@ export default class LoginScreen extends React.Component {
         // if (responseJson == true)
       } else{
         this.setState({ FullName : responseJson[0].returnedFullName})
+        this.setState({ LicenseNumber : responseJson[0].returnedLicense})
         // console.log(this.state);
-        Alert.alert("Full Name: " + this.state.FullName, "Email: " + this.state.UserEmail);
+        Alert.alert("Full Name: " + this.state.FullName, "UserName: " + this.state.UserName + "\nLicense Number: " + this.state.LicenseNumber);
         this.props.navigation.navigate('SettingsStack')
       }
 
@@ -102,22 +103,22 @@ export default class LoginScreen extends React.Component {
 
             <Logo/>
 
-            <Text style= {styles.title}>User Login Form</Text>
+            <Text style= {styles.title}>User Login</Text>
      
             <TextInput
-              placeholder="Enter User Email"
-              onChangeText={email => this.setState({UserEmail : email})}
+              placeholder="Enter Username"
+              onChangeText={username => this.setState({UserName : username})}
               underlineColorAndroid='transparent'
               style={styles.TextInputStyleClass}
               returnKeyType='next'
               onSubmitEditing={() => this.passwordInput.focus()}
               autoCapitalize='none'
               autoCorrect={false}
-              keyboardType="email-address"
+              keyboardType="default"
               />
      
             <TextInput
-              placeholder="Enter User Password"
+              placeholder="Enter Password"
               onChangeText={password => this.setState({UserPassword : password})}
               underlineColorAndroid='transparent'
               style={styles.TextInputStyleClass}
@@ -126,7 +127,7 @@ export default class LoginScreen extends React.Component {
               ref={(input) => this.passwordInput = input}
               />
      
-            <Button title="Click Here To Login" onPress={this.UserLoginFunction} color="#2196F3" />
+            <Button title="LOGIN" onPress={this.UserLoginFunction} color="#2196F3" />
             <TouchableOpacity onPress={() => navigate('ForgotPasswordStack')} style={styles.touchableText}><Text style={styles.alternativeButton}>Forgot Password</Text></TouchableOpacity>
 
 
@@ -141,38 +142,6 @@ export default class LoginScreen extends React.Component {
     );
   }
 
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
-  }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = StyleSheet.create({
@@ -205,7 +174,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderWidth: 1,
     borderColor: '#2196F3',
-    borderRadius: 5 ,
+    borderRadius: 5,
+    marginVertical: 3
   },
   title:{
     fontSize: 22, 

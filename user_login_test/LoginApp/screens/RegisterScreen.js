@@ -1,18 +1,14 @@
 import React from 'react';
 import {
-  Image,
-  Platform,
-  ScrollView,
   StyleSheet,
+  Button,
   Text,
   TouchableOpacity,
   TextInput,
-  Button,
   Alert,
   View,
   KeyboardAvoidingView,
 } from 'react-native';
-import { WebBrowser } from 'expo';
 import Logo from '../components/Logo';
 
 export default class RegisterScreen extends React.Component {
@@ -26,22 +22,18 @@ export default class RegisterScreen extends React.Component {
     super()
 
     this.state = {
+      UserName: '',
       FullName: '',
-      UserEmail: '',
-      UserPassword: ''
+      LicenseNumber: '',
+      UserPassword: '',
+      ConfirmPassword: ''
     }
-    // console.log(this.state.FullName);
   }
-
-  // buttonClickListener = () => {
-  //   const { FullName } = this.state;
-  //   Alert.alert(FullName);
-  // }
 
   // After inserting the data successfully it will print the response message coming form PHP file in Alert.
   UserRegistrationFunction = () =>{
 
-    const { FullName, UserEmail, UserPassword } = this.state;
+    const { UserName, FullName, LicenseNumber, UserPassword } = this.state;
 
     // Alert.alert(FullName);
 
@@ -54,8 +46,9 @@ export default class RegisterScreen extends React.Component {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        full_name: FullName,
-        user_email: UserEmail,
+        user_username: UserName,
+        user_fullname: FullName,
+        user_license: LicenseNumber,
         user_password: UserPassword
     
       })
@@ -65,10 +58,19 @@ export default class RegisterScreen extends React.Component {
     
     // Showing response message coming from server after inserting records.
             Alert.alert(responseJson);
+            console.log(responseJson)
     
           }).catch((error) => {
             console.error(error);
           });
+  }
+
+  _passwordConfirmation = () => {
+    if (this.state.UserPassword !== this.state.ConfirmPassword){
+      Alert.alert("Passwords don't match!")
+    } else{
+      this.UserRegistrationFunction()
+    }
   }
 
   // Create 3 TextInput component and 1 Button component inside the render’s return block, Each TextInput will get a value from user and stores in State. We would call the UserRegistrationFunction() on button onPress event.
@@ -82,47 +84,83 @@ export default class RegisterScreen extends React.Component {
 
           <Logo/>
 
-          <Text style= {styles.title}>User Registration Form</Text>
+          <Text style= {styles.title}>User Registration</Text>
       
-          <TextInput
-            placeholder="Enter Full Name"
-            onChangeText={name => this.setState({FullName : name})}
-            underlineColorAndroid='transparent'
-            style={styles.TextInputStyleClass}
-            returnKeyType='next'
-            onSubmitEditing={() => this.emailInput.focus()}
-            autoCorrect={false}
-            keyboardType="default"
-          />
-     
-          <TextInput
-            placeholder="Enter User Email"
-            onChangeText={email => this.setState({UserEmail : email})}
-            underlineColorAndroid='transparent'
-            style={styles.TextInputStyleClass}
-            returnKeyType='next'
-            onSubmitEditing={() => this.passwordInput.focus()}
-            ref={(input) => this.emailInput = input}
-            autoCapitalize='none'
-            autoCorrect={false}
-            keyboardType="email-address"
-          />
-     
-          <TextInput
-            placeholder="Enter User Password"
-            onChangeText={password => this.setState({UserPassword : password})}
-            underlineColorAndroid='transparent'
-            style={styles.TextInputStyleClass}
-            secureTextEntry={true}
-            returnKeyType='go'
-            ref={(input) => this.passwordInput = input}
-            autoCapitalize='none'
-            autoCorrect={false}
-          />
-          
-          <Button title="Click Here To Register" onPress={this.UserRegistrationFunction} color="#2196F3" />
+            <TextInput
+              placeholder="Username"
+              onChangeText={uName => this.setState({UserName : uName})}
+              underlineColorAndroid='transparent'
+              style={styles.TextInputStyleClass}
+              returnKeyType='next'
+              onSubmitEditing={() => this.nameInput.focus()}
+              ref={(input) => this.usernameInput = input}
+              autoCapitalize='none'
+              autoCorrect={false}
+              keyboardType="default"
+              maxLength={20}
+            />
 
-          {/* <Button title="Click Here To Register" onPress={this.UserRegistrationFunction} color="#2196F3" /> */}
+            <TextInput
+              placeholder="Full Name"
+              onChangeText={fName => this.setState({FullName : fName})}
+              underlineColorAndroid='transparent'
+              style={styles.TextInputStyleClass}
+              returnKeyType='next'
+              onSubmitEditing={() => this.licenseInput.focus()}
+              ref={(input) => this.nameInput = input}
+              autoCapitalize='words'
+              autoCorrect={false}
+              autoCompleteType="name"
+              keyboardType="default"
+            />
+
+            <TextInput
+              placeholder="License Number"
+              onChangeText={licenseNum => this.setState({LicenseNumber : licenseNum})}
+              underlineColorAndroid='transparent'
+              style={styles.TextInputStyleClass}
+              returnKeyType='next'
+              onSubmitEditing={() => this.passwordInput.focus()}
+              ref={(input) => this.licenseInput = input}
+              autoCorrect={false}
+              keyboardType="default"
+              keyboardType="name-phone-pad"
+              autoCapitalize='characters'
+              maxLength={14}
+            />
+      
+            <TextInput
+              placeholder="Password"
+              onChangeText={password => this.setState({UserPassword : password})}
+              underlineColorAndroid='transparent'
+              style={styles.TextInputStyleClass}
+              secureTextEntry={true}
+              returnKeyType='next'
+              onSubmitEditing={() => this.confirmpasswordInput.focus()}
+              ref={(input) => this.passwordInput = input}
+              autoCapitalize='none'
+              autoCorrect={false}
+              keyboardType="default"
+              selectTextOnFocus={true}
+            />
+
+            <TextInput
+              placeholder="Confirm Password"
+              onChangeText={confirmPassword => this.setState({ConfirmPassword : confirmPassword})}
+              underlineColorAndroid='transparent'
+              style={styles.TextInputStyleClass}
+              secureTextEntry={true}
+              returnKeyType='go'
+              ref={(input) => this.confirmpasswordInput = input}
+              autoCapitalize='none'
+              autoCorrect={false}
+              eyboardType="default"
+              selectTextOnFocus={true}
+              onSubmitEditing={this._passwordConfirmation}
+            />
+          
+
+          <Button title="REGISTER" onPress={this._passwordConfirmation} color="#2196F3" />
 
           <View style={styles.signupTextCont}>
             <Text style={styles.signupText}>Already have an account?</Text>
@@ -134,38 +172,6 @@ export default class RegisterScreen extends React.Component {
     );
   }
 
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
-    }
-  }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
 const styles = StyleSheet.create({
@@ -198,7 +204,8 @@ const styles = StyleSheet.create({
     height: 40,
     borderWidth: 1,
     borderColor: '#2196F3',
-    borderRadius: 5 ,
+    borderRadius: 5,
+    marginVertical: 3
   },
   title:{
     fontSize: 22, 
@@ -221,5 +228,11 @@ const styles = StyleSheet.create({
   	color:'#009688',
   	fontSize:16,
   	fontWeight:'500'
+  },
+  inputsGroup : {
+    justifyContent: 'center',
+    flex:1,
+    margin: 10,
+    marginBottom: 50
   }
 });
