@@ -22,11 +22,13 @@ class LoginScreen extends Component {
             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
             onChangeText={(username) => this.setState({ username })}
             value={this.state.username}
+            clearTextOnFocus= {true}
           />
           <TextInput
             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
             onChangeText={(password) => this.setState({ password })}
             value={this.state.password}
+            clearTextOnFocus= {true}
           />
           <Button
             onPress={() => this.props.navigation.navigate('Home')}
