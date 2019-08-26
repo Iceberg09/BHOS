@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { View, SafeAreaView, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Logo from '../components/Logo';
+import User from '../user';
 
 export default class ChangeDutyStatusScreen extends Component {
 
     onDutyButtonPress() {
-        alert("Your duty status is now set to on duty");
+        alert(`${User.userName} is now on duty!`);
     };
 
     offDutyButtonPress() {
