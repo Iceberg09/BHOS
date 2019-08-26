@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import Logo from '../components/Logo';
+import User from '../user';
 
 export default class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -83,8 +84,14 @@ export default class LoginScreen extends React.Component {
       } else{
         this.setState({ FullName : responseJson[0].returnedFullName})
         this.setState({ LicenseNumber : responseJson[0].returnedLicense})
+        User.userName=this.state.UserName;
+        console.log(User.userName);
+
+        Alert.alert(User.userName);
+
+
         // console.log(this.state);
-        Alert.alert("Full Name: " + this.state.FullName, "UserName: " + this.state.UserName + "\nLicense Number: " + this.state.LicenseNumber);
+        //Alert.alert("Full Name: " + this.state.FullName, "UserName: " + this.state.UserName + "\nLicense Number: " + this.state.LicenseNumber);
         this.props.navigation.navigate('SettingsStack')
       }
 
