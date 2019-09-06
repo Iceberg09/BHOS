@@ -113,13 +113,8 @@ export default class LoginScreen extends React.Component {
             <Text style= {styles.title}>User Login</Text>
      
             <TextInput
-<<<<<<< HEAD
               placeholder="Enter Username"
               onChangeText={username => this.setState({UserName : username})}
-=======
-              placeholder="Enter User Email"
-              
->>>>>>> fa3dcb7bb2c53b9e0ea7b219b314a5d7ea22e046
               underlineColorAndroid='transparent'
               style={styles.TextInputStyleClass}
               returnKeyType='next'
