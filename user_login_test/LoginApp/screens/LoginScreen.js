@@ -106,7 +106,7 @@ export default class LoginScreen extends React.Component {
      
             <TextInput
               placeholder="Enter User Email"
-              onChangeText={email => this.setState({UserEmail : email})}
+              
               underlineColorAndroid='transparent'
               style={styles.TextInputStyleClass}
               returnKeyType='next'
