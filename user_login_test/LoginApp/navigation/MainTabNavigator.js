@@ -7,6 +7,7 @@ import RegisterScreen from '../screens/RegisterScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import HOSScreen from '../screens/HOSScreen';
 
 // Create a stack navigator with the "RegisterScreen.js file and call it RegisterStack"
 const RegisterStack = createStackNavigator({
@@ -70,9 +71,25 @@ ForgotPasswordStack.navigationOptions = {
   ),
 };
 
+
+const HOSStack = createStackNavigator({
+  HOS: HOSScreen,
+});
+
+HOSStack.navigationOptions = {
+  tabBarLabel: 'HOS',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-link' : 'md-link'}
+    />
+  ),
+};
+
 export default createBottomTabNavigator({
   RegisterStack,
   LoginStack,
   SettingsStack,
   ForgotPasswordStack,
+  HOSStack,
 });
