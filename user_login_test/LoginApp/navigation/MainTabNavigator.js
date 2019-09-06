@@ -7,7 +7,11 @@ import RegisterScreen from '../screens/RegisterScreen';
 import LoginScreen from '../screens/LoginScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+<<<<<<< HEAD
 import ChangeDutyStatusScreen from '../screens/ChangeDutyStatusScreen';
+=======
+import HOSScreen from '../screens/HOSScreen';
+>>>>>>> fa3dcb7bb2c53b9e0ea7b219b314a5d7ea22e046
 
 // Create a stack navigator with the "RegisterScreen.js file and call it RegisterStack"
 const RegisterStack = createStackNavigator({
@@ -71,12 +75,22 @@ ForgotPasswordStack.navigationOptions = {
   ),
 };
 
+<<<<<<< HEAD
 const ChangeDutyStatusStack = createStackNavigator({
   ChangeDutyStatus: ChangeDutyStatusScreen,
 });
 
 ChangeDutyStatusStack.navigationOptions = {
   tabBarLabel: 'Change Duty Status',
+=======
+
+const HOSStack = createStackNavigator({
+  HOS: HOSScreen,
+});
+
+HOSStack.navigationOptions = {
+  tabBarLabel: 'HOS',
+>>>>>>> fa3dcb7bb2c53b9e0ea7b219b314a5d7ea22e046
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -90,5 +104,9 @@ export default createBottomTabNavigator({
   LoginStack,
   SettingsStack,
   ForgotPasswordStack,
+<<<<<<< HEAD
   ChangeDutyStatusStack,
+=======
+  HOSStack,
+>>>>>>> fa3dcb7bb2c53b9e0ea7b219b314a5d7ea22e046
 });

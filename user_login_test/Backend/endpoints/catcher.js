@@ -6,10 +6,16 @@ catcherrouter.get("/users", (req, res) => {
 	res.json([user1, user2])
 })
 
+/* catcherrouter.post("/dutystatuschange", (req, res) => {
+
+}) */
+
 // catching any 404s
 catcherrouter.get("*", (req, res) => {
 	console.log("Responding to root route")
 	res.send(`Where are you going!!!???`)
 })
+
+
 
 module.exports = catcherrouter;
